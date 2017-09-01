@@ -17,7 +17,7 @@ this plugin just install it via ``pip``:
 
 Until then:
 
-  pip install -e git+https://github.com/boylec/sentry_vsts
+  sudo -H pip install -e git+https://github.com/boylec/sentry-vsts#egg=sentry_vsts
 
 Once the plugin is installed, it will be configurable on a per-project basis
 within the Sentry.io UI. (Choose a project to integrate, and then go to project
