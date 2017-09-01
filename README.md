@@ -10,7 +10,7 @@ Installation
 ============
 
 Once the plugin is on PyPi (which it currently isn't), one would install and use
-this plugin just install it via ``pip``::
+this plugin just install it via ``pip``:
 
   pip install sentry_vsts
 
