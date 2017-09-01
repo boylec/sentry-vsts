@@ -33,7 +33,10 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
             'vsts_personal_access_token', project)
         secret_field = get_secret_field_config(
             vsts_personal_access_token,
-            'Enter your API Personal Access token.'
+            'Enter your API Personal Access token. Follow these instructions \
+            to create a token for yourself in VSTS: https://www.visualstudio.\
+            com/en-us/docs/setup-admin/team-services/use-personal-access-token\
+            s-to-authenticate'
         )
         secret_field.update(
             {
@@ -50,10 +53,10 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'label': 'VSTS Account Name',
                 'type': 'text',
                 'default': project.organization.name,
-                'placeholder': 'e.g. (The same name appearing in your VSTS url: \
-                \{name\}.visualstudio.com)',
+                'placeholder': '',
                 'required': True,
-                'help': 'Enter the account name of your VSTS instance.'
+                'help': 'Enter the account name of your VSTS instance. This will be the \
+                same name appearing in your VSTS url: {name}.visualstudio.com'
             },
             {
                 'name': 'username',
@@ -90,7 +93,9 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         """
         If overriding, supported properties include 'readonly': true
         """
-
+        import pdb
+        pdb.set_trace()
+        
         orgName = group.project.organization.name
         projName = group.project.name
         grpId = group.short_id
