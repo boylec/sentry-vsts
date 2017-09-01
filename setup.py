@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 """This module installs the Sentry.io VSTS integration plugin"""
 
 from setuptools import setup, find_packages
@@ -12,7 +12,7 @@ setup(
     description='A Sentry.io plugin for Visual Studio Team Services \
     integration',
     keywords='sentry-vsts sentry vsts visual studio team services sentry.io',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'sentry>=4.6.0',
