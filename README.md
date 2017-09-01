@@ -1,4 +1,4 @@
-Sentry-Vsts
+Sentry-VSTS
 ===============
 
 This is a plugin that can be installed on a Sentry.io server which is intended
