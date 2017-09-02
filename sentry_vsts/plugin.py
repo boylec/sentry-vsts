@@ -93,9 +93,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         """
         If overriding, supported properties include 'readonly': true
         """
-        import pdb
-        pdb.set_trace()
-        
+
         orgName = group.project.organization.name
         projName = group.project.name
         grpId = group.short_id
