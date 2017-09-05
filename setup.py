@@ -22,7 +22,8 @@ setup(
     license='MIT',
     include_package_data=True,
     entry_points={
-        'sentry.plugins': ['vsts=sentry_vsts.plugin:VstsPlugin']
+        'sentry.apps': ['sentry_vsts=sentry_vsts'],
+        'sentry.plugins': ['sentry_vsts=sentry_vsts.plugin:VstsPlugin']
     },
     classifiers=[
         'Framework :: Django',
