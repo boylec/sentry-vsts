@@ -118,7 +118,7 @@ class VstsClient(object):
         try:
             r = session.patch(
                 self.route,
-                params=payload,
+                json=payload,
                 auth=auth,
                 verify=False,
                 timeout=self.HTTP_TIMEOUT
