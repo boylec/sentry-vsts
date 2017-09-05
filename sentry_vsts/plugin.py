@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 import sentry_vsts
 
-from client import VstsClient
+from sentry_vsts.client import VstsClient
 from sentry.plugins.bases.issue2 import IssuePlugin2
 from sentry_plugins.base import CorePluginMixin
 from sentry_plugins.utils import get_secret_field_config
