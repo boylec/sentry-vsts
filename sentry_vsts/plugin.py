@@ -96,9 +96,9 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
 
         orgName = group.project.organization.name
         projName = group.project.name
-        grpId = group.short_id
-        rootUrl = 'https://sentry.io/'
-        absolutePath = rootUrl + orgName + '/' + projName + '/issues/' + grpId
+        id = group.short_id
+        rootUrl = 'https://sentry.io'
+        path = "{0}/{1}/{2}/issues/{3}".format(rootUrl, orgName, projName, id)
 
         fields = [
             {
@@ -114,7 +114,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
             }, {
                 'name': 'sentryissuelink',
                 'label': 'Sentry Issue Link',
-                'default': absolutePath,
+                'default': path,
                 'type': 'url',
                 'readonly': True
             },

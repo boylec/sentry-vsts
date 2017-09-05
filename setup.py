@@ -22,7 +22,6 @@ setup(
     license='MIT',
     include_package_data=True,
     entry_points={
-        'sentry.apps': ['sentry_vsts=sentry_vsts'],
         'sentry.plugins': ['sentry_vsts=sentry_vsts.plugin:VstsPlugin']
     },
     classifiers=[
