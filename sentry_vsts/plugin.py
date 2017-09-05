@@ -4,9 +4,9 @@ easily out of issues detected from Sentry.io """
 
 from __future__ import absolute_import
 
-
 import sentry_vsts
-import urlparse
+
+from client import VstsClient
 from sentry.plugins.bases.issue2 import IssuePlugin2
 from sentry_plugins.base import CorePluginMixin
 from sentry_plugins.utils import get_secret_field_config
@@ -59,6 +59,14 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 same name appearing in your VSTS url: {name}.visualstudio.com'
             },
             {
+                'name': 'projectname',
+                'label': 'Project name',
+                'type': 'text',
+                'placeholder': '',
+                'required': True,
+                'help': 'Enter the project name.'
+            },
+            {
                 'name': 'username',
                 'label': 'User name',
                 'type': 'text',
@@ -66,7 +74,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'required': True,
                 'help': 'Enter your user name.'
             },
-            secret_field,
+            secret_field
         ]
 
     def is_configured(self, request, project, **kwargs):
@@ -80,14 +88,27 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         Given an issue_id (string) return an absolute URL to the issue's
         details page.
         """
-        host = self.get_option('host', group.project)
-        return urlparse.urljoin(host, 'T%s' % issue_id)
+        account = self.get_option('account', group.project)
+        projectname = self.get_option('projectname', group.project)
+        template = "https://{0}.visualstudio.com/{1}/_workitems?id={2}"
+        return template.format(account, projectname, issue_id)
 
     def create_issue(self, request, group, form_data, **kwargs):
         """
         Creates the issue on the remote service and returns an issue ID.
         """
-        raise NotImplementedError
+        account = self.get_option('account', group.project)
+        projectname = self.get_option('projectname', group.project)
+        username = self.get_option('username', group.project)
+        secret = self.get_option('vsts_personal_access_token', group.project)
+
+        client = VstsClient(account, projectname, username, secret)
+
+        title = form_data['title']
+        description = form_data['description']
+        link = form_data['sentryLink']
+        response = client.create_work_item(title, description, link)
+        return response['id']
 
     def get_new_issue_fields(self, request, group, event, **kwargs):
         """
@@ -96,7 +117,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
 
         orgName = group.project.organization.name
         projName = group.project.name
-        id = group.short_id
+        id = event.event_id
         rootUrl = 'https://sentry.io'
         path = "{0}/{1}/{2}/issues/{3}".format(rootUrl, orgName, projName, id)
 
@@ -112,7 +133,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'default': self.get_group_description(request, group, event),
                 'type': 'textarea'
             }, {
-                'name': 'sentryissuelink',
+                'name': 'sentryLink',
                 'label': 'Sentry Issue Link',
                 'default': path,
                 'type': 'url',
