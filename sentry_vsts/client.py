@@ -78,9 +78,11 @@ class VSTSResponse(object):
 
 
 class VstsClient(object):
+    HTTP_TIMEOUT = 5
+
     def __init__(self, account, projectname, username, secret):
         routeTemplate = "https://{0}/DefaultCollection/{1}/_apis/wit/workitems/\
-                        $Bug?api-version=2.0"
+                        $Bug?api-version=3.0"
         self.username = username
         self.secret = secret
         self.route = routeTemplate.format(account, projectname)
