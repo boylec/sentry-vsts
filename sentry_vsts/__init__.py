@@ -7,6 +7,6 @@ sentry_vsts
 
 try:
     VERSION = __import__('pkg_resources') \
-        .get_distribution('sentry-twilio').version
+        .get_distribution('sentry_vsts').version
 except Exception as e:
     VERSION = 'unknown'
