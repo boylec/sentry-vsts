@@ -6,6 +6,7 @@ Sentry.io team"""
 
 import logging
 import six
+import base64
 
 from sentry.http import build_session
 from sentry.utils import json
@@ -80,10 +81,9 @@ class VSTSResponse(object):
 class VstsClient(object):
     HTTP_TIMEOUT = 5
 
-    def __init__(self, account, projectname, username, secret):
+    def __init__(self, account, projectname, secret):
         routeTemplate = "https://{0}/DefaultCollection/{1}/_apis/wit/workitems/\
                         $Bug?api-version=3.0"
-        self.username = username
         self.secret = secret
         self.route = routeTemplate.format(account, projectname)
 
@@ -113,13 +113,14 @@ class VstsClient(object):
         return vstsResponse
 
     def make_request(self, payload):
-        auth = self.username.encode('utf8'), self.secret.encode('utf8')
+        b64secret = base64.b64encode(self.secret)
+        headers = {'Authorization': "Basic {0}".format(b64secret)}
         session = build_session()
         try:
             r = session.patch(
                 self.route,
                 json=payload,
-                auth=auth,
+                headers=headers,
                 verify=False,
                 timeout=self.HTTP_TIMEOUT
             )
