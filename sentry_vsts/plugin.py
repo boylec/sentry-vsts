@@ -13,6 +13,7 @@ from sentry_plugins.utils import get_secret_field_config
 
 
 class VstsPlugin(CorePluginMixin, IssuePlugin2):
+    allowed_actions = ('create')
     author = 'Casey Boyle'
     author_url = 'https://github.com/boylec/sentry-vsts'
     version = sentry_vsts.VERSION
