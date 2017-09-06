@@ -10,6 +10,7 @@ from sentry_vsts.client import VstsClient
 from sentry.plugins.bases.issue2 import IssuePlugin2
 from sentry_plugins.base import CorePluginMixin
 from sentry_plugins.utils import get_secret_field_config
+from sentry.utils.http import absolute_uri
 
 
 class VstsPlugin(CorePluginMixin, IssuePlugin2):
@@ -117,17 +118,13 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         created_item = client.create_work_item(title, description, link)
         return created_item['id']
 
+    def get_group_description(self, request, group, event):
+        return self.get_group_body(request, group, event)
+
     def get_new_issue_fields(self, request, group, event, **kwargs):
         """
         If overriding, supported properties include 'readonly': true
         """
-
-        orgName = group.project.organization.name
-        projName = group.project.name
-        id = event.event_id
-        rootUrl = 'https://sentry.io'
-        path = "{0}/{1}/{2}/issues/{3}".format(rootUrl, orgName, projName, id)
-
         fields = [
             {
                 'name': 'title',
@@ -142,7 +139,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
             }, {
                 'name': 'sentryLink',
                 'label': 'Sentry Issue Link',
-                'default': path,
+                'default': absolute_uri(group.get_absolute_url()),
                 'type': 'url',
                 'readonly': True
             },
