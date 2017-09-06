@@ -64,7 +64,7 @@ class VSTSResponse(object):
         self.status_code = status_code
 
     def __repr__(self):
-        return "<JIRAResponse<%s> %s>" % (self.status_code, self.text[:120])
+        return "<VSTSResponse<%s> %s>" % (self.status_code, self.text[:120])
 
     @classmethod
     def from_response(cls, response):
@@ -156,4 +156,4 @@ class VstsClient(object):
             raise VSTSUnauthorized.from_response(r)
         elif r.status_code < 200 or r.status_code >= 300:
             raise VSTSError.from_response(r)
-        return VSTSResponse.from_response(r)
+        return VSTSResponse.from_response(r).json

@@ -30,8 +30,13 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
     conf_key = slug
 
     def get_configure_plugin_fields(self, request, project, **kwargs):
+        self.get_option()
+
         vsts_personal_access_token = self.get_option(
-            'vsts_personal_access_token', project)
+            'vsts_personal_access_token',
+            project
+        )
+
         secret_field = get_secret_field_config(
             vsts_personal_access_token,
             'Enter your API Personal Access token. Follow the instructions \
@@ -43,7 +48,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
             {
                 'name': 'vsts_personal_access_token',
                 'label': 'Access Token',
-                'placeholder': 'e.g. g5DWFtLzaztgYFrqhVfE',
+                'placeholder': '52 character personal access token',
                 'required': True,
             }
         )
@@ -63,6 +68,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'name': 'projectname',
                 'label': 'Project name',
                 'type': 'text',
+                'default': project.name,
                 'placeholder': '',
                 'required': True,
                 'help': 'Enter the project name.'
@@ -108,8 +114,8 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         title = form_data['title']
         description = form_data['description']
         link = form_data['sentryLink']
-        response = client.create_work_item(title, description, link)
-        return response['id']
+        created_item = client.create_work_item(title, description, link)
+        return created_item['id']
 
     def get_new_issue_fields(self, request, group, event, **kwargs):
         """
