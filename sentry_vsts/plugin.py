@@ -125,11 +125,13 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         """
         If overriding, supported properties include 'readonly': true
         """
+        title = self.get_group_title(request, group, event)
+        title = "[Sentry Bug] {0}".format(title)
         fields = [
             {
                 'name': 'title',
                 'label': 'Title',
-                'default': self.get_group_title(request, group, event),
+                'default': title,
                 'type': 'text'
             }, {
                 'name': 'description',
