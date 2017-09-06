@@ -7,14 +7,13 @@ Sentry.io team"""
 import logging
 import six
 import base64
+from simplejson import _default_decoder
 
-from sentry.http import build_session
-from sentry.utils import json
+import requests
 from requests.exceptions import ConnectionError, RequestException
 
 from simplejson.decoder import JSONDecodeError
 from BeautifulSoup import BeautifulStoneSoup
-from django.utils.datastructures import SortedDict
 
 
 class VSTSError(Exception):
@@ -27,10 +26,7 @@ class VSTSError(Exception):
         self.xml = None
         if response_text:
             try:
-                self.json = json.loads(
-                    response_text,
-                    object_pairs_hook=SortedDict
-                )
+                self.json = _default_decoder.decode(response_text)
             except (JSONDecodeError, ValueError):
                 if self.text[:5] == "<?xml":
                     # perhaps it's XML?
@@ -56,10 +52,7 @@ class VSTSResponse(object):
         self.xml = None
         if response_text:
             try:
-                self.json = json.loads(
-                    response_text,
-                    object_pairs_hook=SortedDict
-                )
+                self.json = _default_decoder.decode(response_text)
             except (JSONDecodeError, ValueError):
                 if self.text[:5] == "<?xml":
                     # perhaps it's XML?
@@ -80,24 +73,13 @@ class VSTSResponse(object):
 
 class VstsClient(object):
     HTTP_TIMEOUT = 5
+    ApiVersion = "3.0"
 
     def __init__(self, account, projectname, username, secret):
-        instance = "{0}.visualstudio.com".format(account)
-        collection = "DefaultCollection"
-        area = "wit"
-        resource = "workitems"
-        workItemType = "Bug"
-        apiVer = "3.0"
-        routeTemplate = "https://{0}/{1}/_apis/{2}/{3}/${4}?api-version={5}"
         self.secret = secret
         self.username = username
-        self.route = routeTemplate.format(
-            instance,
-            collection,
-            area,
-            resource,
-            workItemType,
-            apiVer)
+        self.instance = "{0}.visualstudio.com".format(account)
+        self.project = projectname
 
     def create_work_item(self, title, description, link):
         payload = [
@@ -121,22 +103,38 @@ class VstsClient(object):
             }
         ]
 
-        vstsResponse = self.make_request(payload=payload)
+        area = "wit"
+        resource = "workitems"
+        workItemType = "Bug"
+
+        routeTemplate = "https://{0}/{1}/_apis/{2}/{3}/${4}?api-version={5}"
+        route = routeTemplate.format(
+            self.instance,
+            self.project,
+            area,
+            resource,
+            workItemType,
+            self.ApiVersion)
+
+        vstsResponse = self.make_request('patch', route, payload=payload)
         return vstsResponse
 
-    def make_request(self, payload):
-        rawAuthValue = "{0}:{1}".format(self.username, self.secret)
-        b64AuthValue = base64.b64encode(rawAuthValue)
-        headers = {'Authorization': "Basic {0}".format(b64AuthValue)}
-        session = build_session()
+    def make_request(self, method, route, payload):
+        rawSecret = "{0}:{1}".format(self.username, self.secret)
+        b64secret = base64.b64encode(rawSecret)
+        headers = {
+            'Authorization': 'Basic {0}'.format(b64secret),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json-patch+json'
+        }
+
         try:
-            r = session.patch(
-                self.route,
-                json=payload,
-                headers=headers,
-                verify=False,
-                timeout=self.HTTP_TIMEOUT
-            )
+            if method == 'patch':
+                r = requests.patch(
+                    route,
+                    json=payload,
+                    headers=headers,
+                    timeout=self.HTTP_TIMEOUT)
         except ConnectionError as e:
             raise VSTSError(six.text_type(e))
         except RequestException as e:
@@ -159,3 +157,9 @@ class VstsClient(object):
         elif r.status_code < 200 or r.status_code >= 300:
             raise VSTSError.from_response(r)
         return VSTSResponse.from_response(r)
+
+if __name__ == "__main__":
+    client = VstsClient("vision2", "Vision2", "casey.boyle@vision2systems.com", "4tzdsybiyzpznrkmoplb2xqrembvznhqc47xu3yi2bqi3of3z4hq")
+    workitem = client.create_work_item("test", "this is a test", "https://sentry.io/issues/1")
+    if workitem is not None:
+        print "success"
