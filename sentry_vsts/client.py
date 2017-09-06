@@ -81,7 +81,7 @@ class VSTSResponse(object):
 class VstsClient(object):
     HTTP_TIMEOUT = 5
 
-    def __init__(self, account, projectname, secret):
+    def __init__(self, account, projectname, username, secret):
         instance = "{0}.visualstudio.com".format(account)
         collection = "DefaultCollection"
         area = "wit"
@@ -90,6 +90,7 @@ class VstsClient(object):
         apiVer = "3.0"
         routeTemplate = "https://{0}/{1}/_apis/{2}/{3}/${4}?api-version={5}"
         self.secret = secret
+        self.username = username
         self.route = routeTemplate.format(
             instance,
             collection,
@@ -124,8 +125,9 @@ class VstsClient(object):
         return vstsResponse
 
     def make_request(self, payload):
-        b64secret = base64.b64encode(self.secret)
-        headers = {'Authorization': "Basic {0}".format(b64secret)}
+        rawAuthValue = "{0}:{1}".format(self.username, self.secret)
+        b64AuthValue = base64.b64encode(rawAuthValue)
+        headers = {'Authorization': "Basic {0}".format(b64AuthValue)}
         session = build_session()
         try:
             r = session.patch(

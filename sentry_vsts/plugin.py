@@ -66,13 +66,22 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'required': True,
                 'help': 'Enter the project name.'
             },
+            {
+                'name': 'username',
+                'label': 'User name',
+                'type': 'text',
+                'placeholder': 'e.g. usera',
+                'required': True,
+                'help': 'Enter your user name.'
+            },
             secret_field
         ]
 
     def is_configured(self, request, project, **kwargs):
         token = bool(self.get_option('vsts_personal_access_token', project))
         account = bool(self.get_option('account', project))
-        return token and account
+        username = bool(self.get_option('username', project))
+        return token and account and username
 
     def get_issue_url(self, group, issue_id, **kwargs):
         """
@@ -90,9 +99,10 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         """
         account = self.get_option('account', group.project)
         projectname = self.get_option('projectname', group.project)
+        username = self.get_option('username', group.project)
         secret = self.get_option('vsts_personal_access_token', group.project)
 
-        client = VstsClient(account, projectname, secret)
+        client = VstsClient(account, projectname, username, secret)
 
         title = form_data['title']
         description = form_data['description']
