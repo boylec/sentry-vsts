@@ -157,9 +157,3 @@ class VstsClient(object):
         elif r.status_code < 200 or r.status_code >= 300:
             raise VSTSError.from_response(r)
         return VSTSResponse.from_response(r)
-
-if __name__ == "__main__":
-    client = VstsClient("vision2", "Vision2", "casey.boyle@vision2systems.com", "4tzdsybiyzpznrkmoplb2xqrembvznhqc47xu3yi2bqi3of3z4hq")
-    workitem = client.create_work_item("test", "this is a test", "https://sentry.io/issues/1")
-    if workitem is not None:
-        print "success"
