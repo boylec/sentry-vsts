@@ -82,11 +82,21 @@ class VstsClient(object):
     HTTP_TIMEOUT = 5
 
     def __init__(self, account, projectname, secret):
-        routeTemplate = "https://{0}/DefaultCollection/{1}/_apis/wit/workitems/{2}"
+        instance = "{0}.visualstudio.com".format(account)
+        collection = "DefaultCollection"
+        area = "wit"
+        resource = "workitems"
+        workItemType = "Bug"
+        apiVer = "3.0"
+        routeTemplate = "https://{0}/{1}/_apis/{2}/{3}/${4}?api-version={5}"
         self.secret = secret
-
-        endparam = "$Bug?api-version=3.0"
-        self.route = routeTemplate.format(account, projectname, endparam)
+        self.route = routeTemplate.format(
+            instance,
+            collection,
+            area,
+            resource,
+            workItemType,
+            apiVer)
 
     def create_work_item(self, title, description, link):
         payload = [
