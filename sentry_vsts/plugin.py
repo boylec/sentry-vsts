@@ -31,8 +31,6 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
     conf_key = slug
 
     def get_configure_plugin_fields(self, request, project, **kwargs):
-        self.get_option()
-
         vsts_personal_access_token = self.get_option(
             'vsts_personal_access_token',
             project
