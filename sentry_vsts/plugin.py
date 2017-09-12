@@ -5,6 +5,7 @@ easily out of issues detected from Sentry.io """
 from __future__ import absolute_import
 
 import sentry_vsts
+import urllib
 
 from sentry_vsts.client import VstsClient
 from sentry.plugins.bases.issue2 import IssuePlugin2
@@ -14,7 +15,7 @@ from sentry.utils.http import absolute_uri
 
 
 class VstsPlugin(CorePluginMixin, IssuePlugin2):
-    allowed_actions = ['create']
+    allowed_actions = ['create', 'unlink']
     author = 'Casey Boyle'
     author_url = 'https://github.com/boylec/sentry-vsts'
     version = sentry_vsts.VERSION
@@ -26,7 +27,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
     description = 'Integrate Visual Studio Team Services work \
     items by linking a project.'
     slug = 'vsts'
-    title = 'Visual Studio Team Services'
+    title = 'VSTS'
     conf_title = title
     conf_key = slug
 
@@ -40,8 +41,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
             vsts_personal_access_token,
             'Enter your API Personal Access token. Follow the instructions \
             at the following URL to create a token for yourself in VSTS: \
-            https://www.visualstudio.com/en-us/docs/setup-admin/team-services/use-personal-access-token\
-            s-to-authenticate'
+            https://www.visualstudio.com/en-us/docs/setup-admin/team-services/use-personal-access-tokens-to-authenticate'
         )
         secret_field.update(
             {
@@ -61,7 +61,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'placeholder': '',
                 'required': True,
                 'help': 'Enter the account name of your VSTS instance. This will be the \
-                same name appearing in your VSTS url: {name}.visualstudio.com'
+                same name appearing in your VSTS url: i.e. [name].visualstudio.com'
             },
             {
                 'name': 'projectname',
@@ -70,7 +70,9 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'default': project.name,
                 'placeholder': '',
                 'required': True,
-                'help': 'Enter the project name.'
+                'help': 'Enter the Visual Studio Team Services project name that you wish \
+                new work items to be added to when they are created from Sentry. This must \
+                be a valid project name within the VSTS account specified above.'
             },
             {
                 'name': 'username',
@@ -95,9 +97,11 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
         details page.
         """
         account = self.get_option('account', group.project)
-        projectname = self.get_option('projectname', group.project)
-        template = "https://{0}.visualstudio.com/{1}/_workitems?id={2}"
-        return template.format(account, projectname, issue_id)
+        projectname = urllib.quote(
+            self.get_option('projectname', group.project))
+        queryparams = urllib.urlencode({'id': issue_id})
+        template = "https://{0}.visualstudio.com/{1}/_workitems?{2}"
+        return template.format(account, projectname, queryparams)
 
     def create_issue(self, request, group, form_data, **kwargs):
         """
