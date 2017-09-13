@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/sentry-vsts.svg)](https://badge.fury.io/py/sentry-vsts)
+
 Sentry-VSTS
 ===============
 
