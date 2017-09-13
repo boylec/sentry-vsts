@@ -9,13 +9,12 @@ Studio Team Services work items.
 Installation
 ============
 
-Once the plugin is on PyPi (which it currently isn't), one would install and use
-this plugin just install it via ``pip``:
+Install the plugin via ``pip``:
 
   pip install sentry_vsts
 
 
-Until then:
+Or optionally install directly from github:
 
   sudo -H pip install -e git+https://github.com/boylec/sentry-vsts#egg=sentry_vsts
 
