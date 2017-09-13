@@ -11,7 +11,7 @@ Installation
 
 Install the plugin via ``pip``:
 
-  pip install sentry_vsts
+  pip install sentry-vsts
 
 
 Or optionally install directly from github:
