@@ -27,7 +27,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
     description = 'Integrate Visual Studio Team Services work \
     items by linking a project.'
     slug = 'vsts'
-    title = 'VSTS'
+    title = 'Visual Studio Team Services'
     conf_title = title
     conf_key = slug
 
