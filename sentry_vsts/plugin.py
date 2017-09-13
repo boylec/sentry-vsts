@@ -27,7 +27,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
     description = 'Integrate Visual Studio Team Services work \
     items by linking a project.'
     slug = 'vsts'
-    title = 'VSTS'
+    title = 'Visual Studio Team Services'
     conf_title = title
     conf_key = slug
 
@@ -58,7 +58,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'label': 'VSTS Account Name',
                 'type': 'text',
                 'default': project.organization.name,
-                'placeholder': '',
+                'placeholder': 'VSTS Account Name',
                 'required': True,
                 'help': 'Enter the account name of your VSTS instance. This will be the \
                 same name appearing in your VSTS url: i.e. [name].visualstudio.com'
@@ -68,7 +68,7 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'label': 'Project name',
                 'type': 'text',
                 'default': project.name,
-                'placeholder': '',
+                'placeholder': 'VSTS project name',
                 'required': True,
                 'help': 'Enter the Visual Studio Team Services project name that you wish \
                 new work items to be added to when they are created from Sentry. This must \
@@ -78,9 +78,9 @@ class VstsPlugin(CorePluginMixin, IssuePlugin2):
                 'name': 'username',
                 'label': 'User name',
                 'type': 'text',
-                'placeholder': 'e.g. usera',
+                'placeholder': 'Your VSTS username',
                 'required': True,
-                'help': 'Enter your user name.'
+                'help': 'Enter the username you use to login to Visual Studio Team Services.'
             },
             secret_field
         ]
